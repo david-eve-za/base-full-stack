@@ -93,6 +93,42 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <filesets>
+                        <fileset>
+                            <directory>src/main/angular/dist</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>src/main/angular/node_modules</directory>
+                            <includes>
+                                <include>**</include>
+                            </includes>
+                        </fileset>
+                        <fileset>
+                            <directory>src/main/angular/node</directory>
+                        </fileset>
+                        <fileset>
+                            <directory>src/main/angular</directory>
+                            <includes>
+                                <include>package-lock.json</include>
+                            </includes>
+                        </fileset>
+                        <fileset>
+                            <directory>src/main/resources/static</directory>
+                            <includes>
+                                <include>**</include>
+                            </includes>
+                            <excludes>
+                                <exclude>static</exclude>
+                            </excludes>
+                        </fileset>
+                    </filesets>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
@@ -106,5 +142,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
