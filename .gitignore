@@ -363,3 +363,4 @@ dist
 *.code-workspace
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,maven,angular,node,intellij+all,macos,java
+*.mv.db

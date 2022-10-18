@@ -1,0 +1,67 @@
+<div class="dashboard-container" [class.is-mobile]="mobileQuery.matches">
+  <!-- Dashboard Toolbar -->
+  <mat-toolbar color="primary" class="dashboard-toolbar">
+
+    <!-- Hamburguer button -->
+    <button mat-icon-button (click)="sidenav.toggle()">
+      <mat-icon>menu</mat-icon>
+    </button>
+    <!-- Title -->
+    <h1 class="app-name">S-Inventory</h1>
+
+    <div fxFlex fxLayout="row" fxLayoutAlign="flex-end">
+      <ul fxLayout="row" fxLayoutGap="20px">
+        <li>
+          <button mat-icon-button>
+            <mat-icon>help_outline</mat-icon>
+          </button>
+        </li>
+        <li>
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <mat-icon>person_outline</mat-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item>
+              <mat-icon>exit_to_app</mat-icon>
+              Close session
+            </button>
+          </mat-menu>
+        </li>
+      </ul>
+
+    </div>
+
+  </mat-toolbar>
+
+  <!-- Side Nav -->
+  <mat-sidenav-container class="sidenav-container"
+                         [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
+    <mat-sidenav #sidenav mode="side" [mode]="mobileQuery.matches ? 'over' : 'side'"
+                [fixedInViewport]="mobileQuery.matches" fixedTopGap="56">
+      <mat-nav-list>
+        <!-- Profile -->
+        <div class="profile-card">
+          <div class="header">
+            <h2>David Gonzalez</h2>
+            <h4>david.eve.za@gmail.com</h4>
+          </div>
+        </div>
+        <mat-divider></mat-divider>
+        <!-- Menu -->
+        <mat-list-item routerLinkActive="active" [routerLink]="nav.route" *ngFor="let nav of menuNav">
+          <mat-icon matListIcon>{{nav.icon}}</mat-icon>
+          <h4 matLine>{{nav.name}}</h4>
+        </mat-list-item>
+      </mat-nav-list>
+
+    </mat-sidenav>
+
+    <!-- Content -->
+    <mat-sidenav-content>
+      <router-outlet></router-outlet>
+    </mat-sidenav-content>
+
+  </mat-sidenav-container>
+
+</div>
+
