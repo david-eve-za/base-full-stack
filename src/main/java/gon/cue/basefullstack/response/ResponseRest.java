@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ResponseRest<T> {
     private List<Map<String,String>> metadata= new ArrayList<>();
-    private List<T> data ;
+    private List<T> data = new ArrayList<>();
 
     public List<Map<String, String>> getMetadata() {
         return metadata;

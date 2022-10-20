@@ -120,6 +120,7 @@ fabric.properties
 
 !.idea/codeStyles
 !.idea/runConfigurations
+BaseFullStack.iml
 
 ### Java ###
 # Compiled class file
@@ -364,3 +365,4 @@ dist
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,maven,angular,node,intellij+all,macos,java
 *.mv.db
+*.trace.db
