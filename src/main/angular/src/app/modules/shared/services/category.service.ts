@@ -18,4 +18,32 @@ export class CategoryService {
   getCategories(){
     return this.http.get(`${baseurl}/categories`);
   }
+
+  /**
+   * Get category by id
+   */
+  getCategoryById(id: number){
+    return this.http.get(`${baseurl}/categories/${id}`);
+  }
+
+  /**
+   * Create category
+   */
+  createCategory(category: any){
+    return this.http.post(`${baseurl}/categories`, category);
+  }
+
+  /**
+   * Update category
+   */
+  updateCategory(id: number, category: any){
+    return this.http.put(`${baseurl}/categories/${id}`, category);
+  }
+
+  /**
+   * Delete category
+   */
+  deleteCategory(id: number){
+    return this.http.delete(`${baseurl}/categories/${id}`);
+  }
 }

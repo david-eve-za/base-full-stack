@@ -2,6 +2,9 @@ import {Component, OnInit, ViewChild} from '@angular/core';
 import {CategoryService} from "../../../shared/services/category.service";
 import {MatTableDataSource} from "@angular/material/table";
 import {MatPaginator} from "@angular/material/paginator";
+import {MatDialog} from "@angular/material/dialog";
+import {AddCategoryComponent} from "../add-category/add-category.component";
+import {MatSnackBar, MatSnackBarRef, SimpleSnackBar} from "@angular/material/snack-bar";
 
 export interface CategoryElement {
   id: number;
@@ -21,8 +24,10 @@ export class CategoryComponent implements OnInit {
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
 
-  constructor(private categoryService: CategoryService) {
+  constructor(private categoryService: CategoryService,private dialog: MatDialog,private snakBar: MatSnackBar) {
   }
+
+
 
   ngOnInit(): void {
     this.getCategories();
@@ -52,4 +57,26 @@ export class CategoryComponent implements OnInit {
     }
   }
 
+  openAddCategoryDialog() {
+    const dialogRef = this.dialog.open(AddCategoryComponent, {
+      width: '500px',
+      data: {}
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      if (result == 1) {
+        this.openSnackBar("Category added successfully", "Close");
+        this.getCategories();
+      }else if(result == 2){
+        this.openSnackBar("Error adding category", "Close");
+      }
+    });
+  }
+
+  openSnackBar(message: string, action: string):MatSnackBarRef<SimpleSnackBar> {
+    return this.snakBar.open(message, action, {
+      duration: 2000,
+    });
+  }
 }
