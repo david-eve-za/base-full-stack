@@ -6,7 +6,7 @@
     <div>
       <mat-form-field appearance="fill" hintLabel="Find by Category">
         <mat-label>Search</mat-label>
-        <input #input matInput>
+        <input #input matInput (keyup)="findBy(input.value)">
       </mat-form-field>
     </div>
   </mat-card-header>

@@ -117,4 +117,16 @@ export class CategoryComponent implements OnInit {
       }
     });
   }
+
+  findBy(value: string) {
+    if (value == "") {
+      this.getCategories();
+    } else {
+      this.categoryService.getCategoryById(value).subscribe(data => {
+        this.processCategoryData(data);
+      }, error => {
+        console.log(error);
+      });
+    }
+  }
 }

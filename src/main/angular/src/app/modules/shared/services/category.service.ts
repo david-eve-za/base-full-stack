@@ -23,7 +23,7 @@ export class CategoryService {
   /**
    * Get category by id
    */
-  getCategoryById(id: number) {
+  getCategoryById(id: string) {
     return this.http.get(`${baseurl}/categories/${id}`);
   }
 
