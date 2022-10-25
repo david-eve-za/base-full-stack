@@ -1,5 +1,5 @@
-import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import {NgModule} from '@angular/core';
+import {RouterModule, Routes} from '@angular/router';
 import {DashboardRoutingModule} from "./modules/dashboard/dashboard-routing.module";
 
 const routes: Routes = [
@@ -9,10 +9,11 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(
     routes,
-    {enableTracing:false, useHash:true}
+    {enableTracing: false, useHash: true}
   ),
     DashboardRoutingModule
   ],
   exports: [RouterModule]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {
+}

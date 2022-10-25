@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MediaMatcher} from "@angular/cdk/layout";
 
 @Component({
@@ -16,11 +16,12 @@ export class SidenavComponent implements OnInit {
     {name: 'Products', icon: 'production_quantity_limits', route: 'home'},
   ];
 
-  constructor(media:MediaMatcher) {
+  constructor(media: MediaMatcher) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
   }
 
   ngOnInit(): void {
+    console.log('SidenavComponent');
   }
 
 }

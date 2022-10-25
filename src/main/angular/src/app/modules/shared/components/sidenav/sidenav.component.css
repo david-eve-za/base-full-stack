@@ -1,6 +1,6 @@
-.dashboard-container{
-  display:flex;
-  flex-direction:column;
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
   position: absolute;
   top: 0;
   bottom: 0;
@@ -8,25 +8,25 @@
   right: 0;
 }
 
-.is-mobile .dashboard-toolbar{
+.is-mobile .dashboard-toolbar {
   position: fixed;
   z-index: 2;
 }
 
-h1.app-name{
+h1.app-name {
   margin-left: 8px;
 }
 
-ul li{
+ul li {
   list-style-type: none;
 }
 
-.profile-card{
+.profile-card {
   text-align: center;
   padding: 0 20px 20px 20px;
 }
 
-.header{
+.header {
   margin-top: 20px;
 }
 

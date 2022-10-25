@@ -1,11 +1,10 @@
-import { NgModule } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { CategoryComponent } from './components/category/category.component';
+import {NgModule} from '@angular/core';
+import {CommonModule} from '@angular/common';
+import {CategoryComponent} from './components/category/category.component';
 import {MaterialModule} from "../shared/material.module";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {FormsModule, ReactiveFormsModule} from "@angular/forms";
-import { AddCategoryComponent } from './components/add-category/add-category.component';
-
+import {AddCategoryComponent} from './components/add-category/add-category.component';
 
 
 @NgModule({
@@ -21,4 +20,5 @@ import { AddCategoryComponent } from './components/add-category/add-category.com
     ReactiveFormsModule
   ]
 })
-export class CategoryModule { }
+export class CategoryModule {
+}

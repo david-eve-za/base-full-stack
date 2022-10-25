@@ -1,22 +1,22 @@
-<h2 mat-dialog-title>Add new Category</h2>
+<h2 mat-dialog-title>{{formState}} Category</h2>
 <mat-dialog-content>
   <form [formGroup]="categoryForm">
     <div>
       <mat-form-field class="category-container">
-        <input matInput placeholder="Category Name" formControlName="name" required>
+        <input formControlName="name" matInput placeholder="Category Name" required>
       </mat-form-field>
       <mat-form-field class="category-container">
-        <textarea matInput placeholder="Description" formControlName="description" required></textarea>
+        <textarea formControlName="description" matInput placeholder="Description" required></textarea>
       </mat-form-field>
     </div>
   </form>
 </mat-dialog-content>
 <mat-dialog-actions>
-  <button mat-button color="primary" (click)="onSave()" [disabled]="categoryForm.invalid">
+  <button (click)="onSave()" [disabled]="categoryForm.invalid" color="primary" mat-button>
     <mat-icon>save</mat-icon>
     Save
   </button>
-  <button mat-button color="primary" (click)="onCancel()">
+  <button (click)="onCancel()" color="primary" mat-button>
     <mat-icon>cancel</mat-icon>
     Cancel
   </button>

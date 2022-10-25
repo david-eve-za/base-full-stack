@@ -5,6 +5,7 @@ import {MatPaginator} from "@angular/material/paginator";
 import {MatDialog} from "@angular/material/dialog";
 import {AddCategoryComponent} from "../add-category/add-category.component";
 import {MatSnackBar, MatSnackBarRef, SimpleSnackBar} from "@angular/material/snack-bar";
+import {ConfirmComponent} from "../../../shared/components/confirm/confirm.component";
 
 export interface CategoryElement {
   id: number;
@@ -24,9 +25,8 @@ export class CategoryComponent implements OnInit {
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
 
-  constructor(private categoryService: CategoryService,private dialog: MatDialog,private snakBar: MatSnackBar) {
+  constructor(private categoryService: CategoryService, private dialog: MatDialog, private snakBar: MatSnackBar) {
   }
-
 
 
   ngOnInit(): void {
@@ -68,15 +68,53 @@ export class CategoryComponent implements OnInit {
       if (result == 1) {
         this.openSnackBar("Category added successfully", "Close");
         this.getCategories();
-      }else if(result == 2){
+      } else if (result == 2) {
         this.openSnackBar("Error adding category", "Close");
       }
     });
   }
 
-  openSnackBar(message: string, action: string):MatSnackBarRef<SimpleSnackBar> {
+  openSnackBar(message: string, action: string): MatSnackBarRef<SimpleSnackBar> {
     return this.snakBar.open(message, action, {
       duration: 2000,
+    });
+  }
+
+
+  editCategory(element: any) {
+    const dialogRef = this.dialog.open(AddCategoryComponent, {
+      width: '500px',
+      data: element
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      if (result == 1) {
+        this.openSnackBar("Category updated successfully", "Close");
+        this.getCategories();
+      } else if (result == 2) {
+        this.openSnackBar("Error updating category", "Close");
+      }
+    });
+  }
+
+  deleteCategory(id: number) {
+    const dialogRef = this.dialog.open(ConfirmComponent, {
+      width: '500px',
+      data: {
+        title: "Delete Category",
+        message: "Are you sure you want to delete this category?",
+        id: id
+      }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result == 1) {
+        this.openSnackBar("Category deleted successfully", "Close");
+        this.getCategories();
+      } else if (result == 2) {
+        this.openSnackBar("Error deleting category", "Close");
+      }
     });
   }
 }

@@ -1,9 +1,9 @@
-<div class="dashboard-container" [class.is-mobile]="mobileQuery.matches">
+<div [class.is-mobile]="mobileQuery.matches" class="dashboard-container">
   <!-- Dashboard Toolbar -->
-  <mat-toolbar color="primary" class="dashboard-toolbar">
+  <mat-toolbar class="dashboard-toolbar" color="primary">
 
     <!-- Hamburguer button -->
-    <button mat-icon-button (click)="sidenav.toggle()">
+    <button (click)="sidenav.toggle()" mat-icon-button>
       <mat-icon>menu</mat-icon>
     </button>
     <!-- Title -->
@@ -17,7 +17,7 @@
           </button>
         </li>
         <li>
-          <button mat-icon-button [matMenuTriggerFor]="menu">
+          <button [matMenuTriggerFor]="menu" mat-icon-button>
             <mat-icon>person_outline</mat-icon>
           </button>
           <mat-menu #menu="matMenu">
@@ -34,10 +34,10 @@
   </mat-toolbar>
 
   <!-- Side Nav -->
-  <mat-sidenav-container class="sidenav-container"
-                         [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
-    <mat-sidenav #sidenav mode="side" [mode]="mobileQuery.matches ? 'over' : 'side'"
-                [fixedInViewport]="mobileQuery.matches" fixedTopGap="56">
+  <mat-sidenav-container [style.marginTop.px]="mobileQuery.matches ? 56 : 0"
+                         class="sidenav-container">
+    <mat-sidenav #sidenav [fixedInViewport]="mobileQuery.matches" [mode]="mobileQuery.matches ? 'over' : 'side'"
+                 fixedTopGap="56" mode="side">
       <mat-nav-list>
         <!-- Profile -->
         <div class="profile-card">
@@ -48,7 +48,7 @@
         </div>
         <mat-divider></mat-divider>
         <!-- Menu -->
-        <mat-list-item routerLinkActive="active" [routerLink]="nav.route" *ngFor="let nav of menuNav">
+        <mat-list-item *ngFor="let nav of menuNav" [routerLink]="nav.route" routerLinkActive="active">
           <mat-icon matListIcon>{{nav.icon}}</mat-icon>
           <h4 matLine>{{nav.name}}</h4>
         </mat-list-item>
