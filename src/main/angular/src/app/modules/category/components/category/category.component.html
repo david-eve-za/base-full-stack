@@ -47,10 +47,10 @@
       <ng-container matColumnDef="actions">
         <th *matHeaderCellDef mat-header-cell> Actions</th>
         <td *matCellDef="let element; let i=index;" mat-cell>
-          <button (click)="editCategory(element)" color="accent" mat-icon-button>
+          <button *ngIf="isAdmin" (click)="editCategory(element)" color="accent" mat-icon-button>
             <mat-icon aria-label="Edit">edit</mat-icon>
           </button>
-          <button (click)="deleteCategory(element.id)" color="accent" mat-icon-button>
+          <button *ngIf="isAdmin" (click)="deleteCategory(element.id)" color="accent" mat-icon-button>
             <mat-icon aria-label="Delete">delete</mat-icon>
           </button>
         </td>

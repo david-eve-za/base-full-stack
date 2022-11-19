@@ -6,6 +6,7 @@ import {MatDialog} from "@angular/material/dialog";
 import {AddCategoryComponent} from "../add-category/add-category.component";
 import {MatSnackBar, MatSnackBarRef, SimpleSnackBar} from "@angular/material/snack-bar";
 import {ConfirmComponent} from "../../../shared/components/confirm/confirm.component";
+import {UtilService} from "../../../shared/services/util.service";
 
 export interface CategoryElement {
   id: number;
@@ -24,13 +25,17 @@ export class CategoryComponent implements OnInit {
 
   @ViewChild(MatPaginator)
   paginator!: MatPaginator;
+  isAdmin!: boolean;
 
-  constructor(private categoryService: CategoryService, private dialog: MatDialog, private snakBar: MatSnackBar) {
+  constructor(private categoryService: CategoryService,
+              private dialog: MatDialog, private snakBar: MatSnackBar,
+              private utils: UtilService) {
   }
 
 
   ngOnInit(): void {
     this.getCategories();
+    this.isAdmin = this.utils.isAdmin();
   }
 
   getCategories() {
