@@ -1,4 +1,4 @@
-package gon.cue.basefullstack.security;
+package gon.cue.basefullstack.config.security;
 
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.springframework.context.annotation.Bean;

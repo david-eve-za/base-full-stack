@@ -1,4 +1,4 @@
-package gon.cue.basefullstack.security;
+package gon.cue.basefullstack.config.security;
 
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
@@ -45,12 +45,15 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         http
+                .csrf()
+                .disable()
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST).hasAnyRole("admin")
                 .antMatchers(HttpMethod.PATCH).hasAnyRole("admin")
                 .antMatchers(HttpMethod.DELETE).hasAnyRole("admin")
                 .antMatchers(HttpMethod.PUT).hasAnyRole("admin")
                 .antMatchers("/api/v1/products").hasAnyRole("user", "admin")
+                .antMatchers("/api/v1/mng/**").hasAnyRole("admin")
                 .anyRequest().permitAll();
     }
 
