@@ -7,7 +7,7 @@ export function initializeKeycloak(keycloak: KeycloakService) {
   return () =>
     keycloak.init({
       config: {
-        url: 'http://localhost:8082/',
+        url: 'http://192.168.1.15:8082/',
         realm: 'MiscRealm',
         clientId: 'angular-client'
       },

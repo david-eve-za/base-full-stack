@@ -21,6 +21,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
+        <!-- JPA Cache -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-cache</artifactId>
+        </dependency>
         <!-- MySQL -->
         <dependency>
             <groupId>mysql</groupId>
@@ -76,19 +81,37 @@
             <version>1.15.3</version>
         </dependency>
         <!-- Jobrunr -->
-        <dependency>
-            <groupId>org.jobrunr</groupId>
-            <artifactId>jobrunr-spring-boot-starter</artifactId>
-            <version>5.3.1</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.jobrunr</groupId>-->
+<!--            <artifactId>jobrunr-spring-boot-starter</artifactId>-->
+<!--            <version>5.3.1</version>-->
+<!--        </dependency>-->
         <!-- PDFBox -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
             <version>2.0.27</version>
         </dependency>
+        <!-- Sejda WebP-->
+        <dependency>
+            <groupId>org.sejda.imageio</groupId>
+            <artifactId>webp-imageio</artifactId>
+            <version>0.1.6</version>
+        </dependency>
+        <!-- htmlunit -->
+        <dependency>
+            <groupId>net.sourceforge.htmlunit</groupId>
+            <artifactId>htmlunit</artifactId>
+            <version>2.70.0</version>
+        </dependency>
+        <!-- Jackson Databind -->
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.14.2</version>
+        </dependency>
     </dependencies>
-
+    <!-- Build Section -->
     <build>
         <plugins>
             <plugin>
@@ -96,8 +119,8 @@
                 <artifactId>frontend-maven-plugin</artifactId>
                 <version>1.12.1</version>
                 <configuration>
-                    <nodeVersion>v18.8.0</nodeVersion>
-                    <npmVersion>8.19.1</npmVersion>
+                    <nodeVersion>v18.12.1</nodeVersion>
+                    <npmVersion>9.2.0</npmVersion>
                     <workingDirectory>src/main/angular/</workingDirectory>
                 </configuration>
                 <executions>

@@ -1,12 +1,19 @@
 import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot, UrlTree} from '@angular/router';
+import {
+  ActivatedRouteSnapshot,
+  CanActivate,
+  CanActivateChild,
+  Router,
+  RouterStateSnapshot,
+  UrlTree
+} from '@angular/router';
 import {Observable} from 'rxjs';
 import {KeycloakAuthGuard, KeycloakService} from "keycloak-angular";
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard extends KeycloakAuthGuard{
+export class AuthGuard extends KeycloakAuthGuard implements CanActivateChild{
 
   constructor(router: Router,keycloakAngular: KeycloakService) {
     super(router, keycloakAngular);
@@ -15,7 +22,6 @@ export class AuthGuard extends KeycloakAuthGuard{
 
   isAccessAllowed(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean | UrlTree> {
     return new Promise(async (resolve, reject) => {
-      let permission;
       if (!this.authenticated) {
         this.keycloakAngular.login().catch((e) => console.log(e));
         return reject(false);
@@ -34,6 +40,10 @@ export class AuthGuard extends KeycloakAuthGuard{
         resolve(false);
       }
     } );
+  }
+
+  canActivateChild(childRoute: ActivatedRouteSnapshot, state: RouterStateSnapshot): Promise<boolean | UrlTree> {
+    return this.isAccessAllowed(childRoute, state);
   }
 
 }

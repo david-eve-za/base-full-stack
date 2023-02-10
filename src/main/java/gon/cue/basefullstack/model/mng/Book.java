@@ -45,6 +45,10 @@ public class Book{
 
     public void setUrl(String url) {
         this.url = url;
+        if (url.endsWith("/"))
+            this.title=url.substring(url.lastIndexOf("/",url.length()-2)+1,url.length()-1);
+        else
+            this.title=url.substring(url.lastIndexOf("/")+1);
     }
 
     public List<Chapter> getChapters() {

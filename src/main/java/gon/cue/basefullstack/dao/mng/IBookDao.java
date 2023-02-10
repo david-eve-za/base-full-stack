@@ -6,8 +6,9 @@ import org.springframework.data.repository.CrudRepository;
 
 import java.util.Optional;
 
-public interface IBookDao extends CrudRepository<Book, Long> {
+public interface IBookDao extends JpaRepository<Book, Long> {
+    Optional<Book> findByUrl(String url);
 
-    Book findByUrl(String url);
+//    Book findByUrl(String url);
 }
 

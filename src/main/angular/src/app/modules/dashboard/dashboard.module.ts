@@ -5,6 +5,7 @@ import {HomeComponent} from './components/home/home.component';
 import {SharedModule} from "../shared/shared.module";
 import {CategoryModule} from "../category/category.module";
 import {ProductModule} from "../product/product.module";
+import {BooksModule} from "../books/books.module";
 
 
 @NgModule({
@@ -16,7 +17,8 @@ import {ProductModule} from "../product/product.module";
     CommonModule,
     SharedModule,
     CategoryModule,
-    ProductModule
+    ProductModule,
+    BooksModule
   ]
 })
 export class DashboardModule {

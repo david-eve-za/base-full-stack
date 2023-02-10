@@ -9,4 +9,7 @@ public interface IMngService {
     void fetchMetadata(Long bookId);
     ResponseEntity<ResponseRest<Book>> getBook(Long id);
     ResponseEntity<ResponseRest<Book>> getBooks();
+    ResponseEntity<ResponseRest<Book>> updateFromLTMO();
+
+    ResponseEntity<byte[]> getBookPDF(Long id, Long chapter);
 }

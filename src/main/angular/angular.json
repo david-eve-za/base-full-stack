@@ -22,9 +22,6 @@
         "@schematics/angular:service": {
           "skipTests": true
         },
-        "@schematics/angular:module": {
-          "skipTests": true
-        },
         "@schematics/angular:class": {
           "skipTests": true
         },
@@ -89,6 +86,10 @@
         },
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
+//          "options": {
+//            "browserTarget": "angular:build",
+//            "proxyConfig": "src/proxy.conf.json"
+//          },
           "configurations": {
             "production": {
               "browserTarget": "angular:build:production"

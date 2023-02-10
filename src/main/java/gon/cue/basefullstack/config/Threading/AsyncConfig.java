@@ -14,9 +14,9 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.lang.reflect.Method;
 import java.util.concurrent.Executor;
 
-@Configuration
-@EnableAsync
-@EnableScheduling
+//@Configuration
+//@EnableAsync
+//@EnableScheduling
 @Slf4j
 public class AsyncConfig implements AsyncConfigurer {
 

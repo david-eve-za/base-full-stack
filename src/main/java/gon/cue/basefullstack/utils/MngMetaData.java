@@ -1,5 +1,6 @@
 package gon.cue.basefullstack.utils;
 
+
 import gon.cue.basefullstack.model.mng.Book;
 import gon.cue.basefullstack.model.mng.Chapter;
 import gon.cue.basefullstack.model.mng.Page;
@@ -16,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,6 +25,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class MngMetaData {
     private static final int DOWNLOAD_BODY_SIZE = 80 * 1000000;
@@ -34,28 +40,70 @@ public class MngMetaData {
 
     public MngMetaData(Book book) {
         this.book = book;
-        this.bookPath = "/Volumes/Elements/Peliculas/.Hide/MNG/";
+        this.setBookPath();
     }
 
-    public void run() throws IOException {
+    private void setBookPath() {
+        this.bookPath = "/Volumes/Elements/Peliculas/.Hide/MNG/" + book.getTitle() + "/";
+    }
+
+    public void run() throws IOException, InterruptedException {
         log.info("Fetching metadata for book: {}", book.getId());
-        if (book.getUrl().contains("manganato")) {
+        if (book.getUrl().contains("manganato.com")) {
             natoMetaDownload();
         }
-        if (book.getUrl().contains("doujins")) {
+        if (book.getUrl().contains("doujins.me")) {
             doujMetaDownload();
         }
         if (book.getUrl().contains("manhwas.net")) {
             mnhwMetaDownload();
         }
-        createPDF();
+        if (book.getUrl().contains("lectortmo.com")) {
+            tmoMetaDownload();
+        }
         log.info("Metadata fetched for book: {}", book.getTitle());
     }
 
-    private void mnhwMetaDownload() {
-        String bookTitle = book.getUrl().substring(book.getUrl().lastIndexOf("/") + 1);
-        book.setTitle(bookTitle);
+    private void tmoMetaDownload() throws InterruptedException {
+        TMOFans tmoFans = new TMOFans();
+//        tmoFans.login();
 
+        List<Map<String, String>> bookInfo = tmoFans.getBookInfo(book.getUrl());
+        List<Chapter> chapters = new ArrayList<>();
+
+        bookInfo.forEach(chapterInfo -> {
+            Chapter chapter = new Chapter();
+            chapter.setUrl(chapterInfo.get("url"));
+            chapter.setTitle(correct(chapterInfo.get("title")));
+            chapter.setBook(book);
+            chapter.setIsRead(false);
+            chapters.add(0, chapter);
+        });
+
+        log.info("Found {} chapters for book: {}", chapters.size(), book.getTitle());
+        for (Chapter chapter : chapters) {
+            if (book.getChapters().stream().filter(c -> c.getTitle().equals(chapter.getTitle())).count() == 0) {
+                book.getChapters().add(chapter);
+            }
+            if (!pdfName(chapter.getTitle()).exists()) {
+                log.info("Adding chapter: {} on book: {}", chapter.getTitle(), book.getTitle());
+                Thread.sleep(5000);
+                List<String> chapterInfo = tmoFans.getChapterInfo(chapter.getUrl());
+                chapterInfo.forEach(pageInfo -> {
+                    Page page = new Page();
+                    page.setUrl(pageInfo);
+                    chapter.getPages().add(page);
+                });
+                Chapter ch = book.getChapters().stream().filter(c -> c.getTitle().equals(chapter.getTitle())).findFirst().get();
+                ch.setPages(chapter.getPages());
+                log.info("Added chapter: {} with: {} pages on book: {}", chapter.getTitle(), chapter.getPages().size(), book.getTitle());
+            }
+        }
+        tmoFans.logout();
+        Thread.sleep(5000);
+    }
+
+    private void mnhwMetaDownload() {
         Document document = null;
         try {
             document = Jsoup.connect(book.getUrl()).maxBodySize(WEB_REQUEST_BODY_SIZE).timeout(DEFAULT_REQUEST_TIMEOUT).get();
@@ -65,28 +113,31 @@ public class MngMetaData {
             document.select("ul.episodes-list").select("li").forEach(element -> {
                 Chapter chapter = new Chapter();
                 chapter.setUrl(element.select("a").attr("href"));
-                chapter.setTitle(element.select("span").first().text().strip());
+                chapter.setTitle(correct(element.select("span").first().text().strip()));
                 chapter.setBook(book);
                 chapter.setIsRead(false);
                 chapters.add(0, chapter);
             });
 
-            int bookSize = book.getChapters().size();
             log.info("Found {} chapters for book: {}", chapters.size(), book.getTitle());
-            for (int i = bookSize; i < chapters.size(); i++) {
-                Chapter chapter = chapters.get(i);
-                log.info("Adding chapter: {} on book: {}", chapter.getTitle(), book.getTitle());
-                Document chapterDocument = Jsoup.connect(chapter.getUrl()).maxBodySize(WEB_REQUEST_BODY_SIZE).timeout(DEFAULT_REQUEST_TIMEOUT).get();
-                chapterDocument.select("div#chapter_imgs").select("img").forEach(element -> {
-                    if (!element.attr("src").contains("discord.jpg")) {
-                        Page page = new Page();
-                        page.setUrl(element.attr("src"));
-                        page.setChapter(chapter);
-                        chapter.getPages().add(page);
-                    }
-                });
-                book.getChapters().add(chapter);
-                log.info("Added chapter: {} with: {} pages on book: {}", chapter.getTitle(), chapter.getPages().size(), book.getTitle());
+            for (Chapter chapter : chapters) {
+                if (book.getChapters().stream().filter(c -> c.getTitle().equals(chapter.getTitle())).count() == 0) {
+                    book.getChapters().add(chapter);
+                }
+                if (!pdfName(chapter.getTitle()).exists()) {
+                    log.info("Adding chapter: {} on book: {}", chapter.getTitle(), book.getTitle());
+                    Document chapterDocument = Jsoup.connect(chapter.getUrl()).maxBodySize(WEB_REQUEST_BODY_SIZE).timeout(DEFAULT_REQUEST_TIMEOUT).get();
+                    chapterDocument.select("div#chapter_imgs").select("img").forEach(element -> {
+                        if (!element.attr("src").contains("discord.jpg")) {
+                            Page page = new Page();
+                            page.setUrl(element.attr("src"));
+                            chapter.getPages().add(page);
+                        }
+                    });
+                    Chapter ch = book.getChapters().stream().filter(c -> c.getTitle().equals(chapter.getTitle())).findFirst().get();
+                    ch.setPages(chapter.getPages());
+                    log.info("Added chapter: {} with: {} pages on book: {}", chapter.getTitle(), chapter.getPages().size(), book.getTitle());
+                }
             }
         } catch (IOException e) {
             log.error("Error fetching metadata for book: {}", book.getId(), e);
@@ -94,9 +145,6 @@ public class MngMetaData {
     }
 
     private void doujMetaDownload() {
-        String bookTitle = book.getUrl().substring(book.getUrl().lastIndexOf("/") + 1);
-        book.setTitle(bookTitle);
-
         Document document = null;
         try {
             document = Jsoup.connect(book.getUrl()).maxBodySize(WEB_REQUEST_BODY_SIZE).timeout(DEFAULT_REQUEST_TIMEOUT).get();
@@ -117,7 +165,7 @@ public class MngMetaData {
                         if (!title.isEmpty()) {
                             Chapter chapter = new Chapter();
                             chapter.setUrl(element.attr("href"));
-                            chapter.setTitle(title);
+                            chapter.setTitle(correct(title));
                             chapter.setBook(book);
                             chapter.setIsRead(false);
                             chapters.add(0, chapter);
@@ -125,19 +173,22 @@ public class MngMetaData {
                     });
 
             log.info("Found {} chapters for book: {}", chapters.size(), book.getTitle());
-            int bookSize = book.getChapters().size();
-            for (int i = bookSize; i < chapters.size(); i++) {
-                Chapter chapter = chapters.get(i);
-                log.info("Adding chapter: {} on book: {}", chapter.getTitle(), book.getTitle());
-                Document document2 = Jsoup.connect(chapter.getUrl()).maxBodySize(WEB_REQUEST_BODY_SIZE).timeout(DEFAULT_REQUEST_TIMEOUT).get();
-                document2.select("img.wp-manga-chapter-img").forEach(element -> {
-                    Page page = new Page();
-                    page.setUrl(element.attr("src").strip());
-                    page.setChapter(chapter);
-                    chapter.getPages().add(page);
-                });
-                book.getChapters().add(chapter);
-                log.info("Added chapter: {} with: {} pages on book: {}", chapter.getTitle(), chapter.getPages().size(), book.getTitle());
+            for (Chapter chapter : chapters) {
+                if (book.getChapters().stream().filter(c -> c.getTitle().equals(chapter.getTitle())).count() == 0) {
+                    book.getChapters().add(chapter);
+                }
+                if (!pdfName(chapter.getTitle()).exists()) {
+                    log.info("Adding chapter: {} on book: {}", chapter.getTitle(), book.getTitle());
+                    Document document2 = Jsoup.connect(chapter.getUrl()).maxBodySize(WEB_REQUEST_BODY_SIZE).timeout(DEFAULT_REQUEST_TIMEOUT).get();
+                    document2.select("img.wp-manga-chapter-img").forEach(element -> {
+                        Page page = new Page();
+                        page.setUrl(element.attr("src").strip());
+                        chapter.getPages().add(page);
+                    });
+                    Chapter ch = book.getChapters().stream().filter(c -> c.getTitle().equals(chapter.getTitle())).findFirst().get();
+                    ch.setPages(chapter.getPages());
+                    log.info("Added chapter: {} with: {} pages on book: {}", chapter.getTitle(), chapter.getPages().size(), book.getTitle());
+                }
             }
         } catch (IOException e) {
             log.error("Error fetching book: " + book.getTitle(), e);
@@ -153,6 +204,7 @@ public class MngMetaData {
 
             String h1 = document1.select("div.story-info-right").select("h1").text().strip();
             book.setTitle(h1);
+            this.setBookPath();
 
             document1.getElementsByClass("chapter-name text-nowrap")
                     .forEach(element -> {
@@ -161,7 +213,7 @@ public class MngMetaData {
                             Chapter chapter = new Chapter();
                             chapter.setBook(book);
                             chapter.setIsRead(false);
-                            chapter.setTitle(title);
+                            chapter.setTitle(correct(title));
                             chapter.setUrl(element.attr("href"));
                             chapter.setIsRead(false);
 
@@ -169,34 +221,47 @@ public class MngMetaData {
                         }
                     });
 
-            int bookSize = book.getChapters().size();
-            for (int i = bookSize; i < chapters.size(); i++) {
-                Chapter chapter = chapters.get(i);
-                log.info("Adding chapter: {} on book: {}", chapter.getTitle(), book.getTitle());
-                Document document = Jsoup.connect(chapter.getUrl()).maxBodySize(WEB_REQUEST_BODY_SIZE).timeout(DEFAULT_REQUEST_TIMEOUT).get();
-                document.select("div.container-chapter-reader").select("img").forEach(element -> {
-                    Page page = new Page();
-                    page.setChapter(chapter);
-                    page.setUrl(element.attr("src").strip());
-                    chapter.getPages().add(page);
-                    log.info("Added page: {} to chapter: {} of book: {}", page.getUrl(), chapter.getTitle(), book.getTitle());
-                });
-
-                book.getChapters().add(chapter);
-                log.info("Added chapter: {} with: {} pages on book: {}", chapter.getTitle(), chapter.getPages().size(), book.getTitle());
+            log.info("Found {} chapters for book: {}", chapters.size(), book.getTitle());
+            for (Chapter chapter : chapters) {
+                if (book.getChapters().stream().filter(c -> c.getTitle().equals(chapter.getTitle())).count() == 0) {
+                    book.getChapters().add(chapter);
+                }
+                if (!pdfName(chapter.getTitle()).exists()) {
+                    log.info("Adding chapter: {} on book: {}", chapter.getTitle(), book.getTitle());
+                    Document document = Jsoup.connect(chapter.getUrl()).maxBodySize(WEB_REQUEST_BODY_SIZE).timeout(DEFAULT_REQUEST_TIMEOUT).get();
+                    document.select("div.container-chapter-reader").select("img").forEach(element -> {
+                        Page page = new Page();
+                        page.setUrl(element.attr("src").strip());
+                        chapter.getPages().add(page);
+                        log.info("Added page: {} to chapter: {} of book: {}", page.getUrl(), chapter.getTitle(), book.getTitle());
+                    });
+                    Chapter ch = book.getChapters().stream().filter(c -> c.getTitle().equals(chapter.getTitle())).findFirst().get();
+                    ch.setPages(chapter.getPages());
+                    log.info("Added chapter: {} with: {} pages on book: {}", chapter.getTitle(), chapter.getPages().size(), book.getTitle());
+                }
             }
         } catch (IOException e) {
             log.error("Error fetching book: " + book.getTitle(), e);
         }
     }
 
-    private void createPDF() {
-        bookPath += book.getTitle() + "/";
-        File file = new File(bookPath);
-        if (!file.exists())
-            file.mkdirs();
+    private String correct(String title) {
+        char[] chars = {'/', ':', '?', '*', '"', '<', '>', '|'};
+        Matcher matcher = Pattern.compile("[" + new String(chars) + "]").matcher(title);
+        return matcher.replaceAll("-");
+//        return title.replace("/", "-")
+//                .replace(":", "-")
+//                .replace("?", "-")
+//                .replace("*", "-")
+//                .replace("\"", "-")
+//                .replace("<", "-")
+//                .replace(">", "-")
+//                .replace("|", "-");
+    }
+
+    public void createPDF() throws IOException {
         for (Chapter chapter : book.getChapters()) {
-            File pdfFile = new File(bookPath + chapter.getTitle() + ".pdf");
+            File pdfFile = pdfName(chapter.getTitle());
             if (pdfFile.exists()) {
                 log.info("PDF already exists for chapter: {} of book: {}", chapter.getTitle(), book.getTitle());
                 continue;
@@ -207,12 +272,12 @@ public class MngMetaData {
                 log.error("No images found for chapter: {} of book: {}", chapter.getTitle(), book.getTitle());
                 continue;
             }
-
+            PDDocument document = new PDDocument();
             try {
-                PDDocument document = new PDDocument();
-
                 log.info("Creating PDF for chapter: {} of book: {}", chapter.getTitle(), book.getTitle());
                 for (File image : images) {
+                    if (image.getAbsolutePath().toLowerCase().equals("022.jpg"))
+                        log.info("Processing WebP image");
                     PDImageXObject pdImage = PDImageXObject.createFromFile(image.getAbsolutePath(), document);
                     PDPage page = new PDPage(new PDRectangle(pdImage.getWidth(), pdImage.getHeight()));
                     document.addPage(page);
@@ -220,17 +285,24 @@ public class MngMetaData {
                     contentStream.drawImage(pdImage, 0, 0);
                     contentStream.close();
                 }
-
                 document.save(pdfFile.getAbsolutePath());
-                document.close();
-
+            } catch (Exception e) {
+                log.error("Error creating PDF for chapter: {} of book: {}", chapter.getTitle(), book.getTitle(), e);
+            } finally {
                 for (File image : images) {
                     Files.delete(image.toPath());
                 }
-            } catch (Exception e) {
-                log.error("Error creating PDF for chapter: {} of book: {}", chapter.getTitle(), book.getTitle(), e);
+                document.close();
             }
         }
+        log.info("Finished creating PDF for book: {}", book.getTitle());
+    }
+
+    private File pdfName(String title) {
+        File file = new File(this.bookPath);
+        if (!file.exists())
+            file.mkdirs();
+        return new File(this.bookPath + title + ".pdf");
     }
 
     private List<File> downloadImages(Chapter chapter) {
@@ -241,13 +313,16 @@ public class MngMetaData {
                 response = Jsoup.connect(page.getUrl()).maxBodySize(DOWNLOAD_BODY_SIZE)
                         .referrer(chapter.getUrl()).timeout(DEFAULT_REQUEST_TIMEOUT)
                         .ignoreContentType(true).execute();
-                File image = new File(bookPath + page.getUrl().substring(page.getUrl().lastIndexOf("/") + 1));
+                String imgName = page.getUrl().substring(page.getUrl().lastIndexOf("/") + 1);
+                imgName = imgName.endsWith(".webp") ? imgName.replace(".webp", ".jpg") : imgName;
+                File image = new File(this.bookPath + imgName);
                 log.info("Downloading image: {} for chapter: {} of book: {}", image.getName(), chapter.getTitle(), book.getTitle());
                 FileOutputStream out = new FileOutputStream(image);
                 out.write(response.bodyAsBytes());
                 out.close();
                 images.add(image);
                 preprocessImage(image);
+
             } catch (Exception e) {
                 log.error("Error downloading image: {} for chapter: {} of book: {}", page.getUrl(), chapter.getTitle(), book.getTitle(), e);
             }
@@ -262,10 +337,28 @@ public class MngMetaData {
             int width = bufferedImage.getWidth();
             int height = bufferedImage.getHeight();
             BufferedImage newBufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-            newBufferedImage.createGraphics().drawImage(bufferedImage, 0, 0, null);
+            newBufferedImage.createGraphics().drawImage(bufferedImage, 0, 0, Color.WHITE, null);
             ImageIO.write(newBufferedImage, "jpg", image);
         } catch (Exception e) {
             log.error("Error preprocessing image: {}", image.getName(), e);
         }
+    }
+
+    public byte[] getPDFByteArray(Long chapter) {
+        byte[] pdfBytes = new byte[0];
+        try {
+            File pdfFile = pdfName(book.getChapters().stream().filter(chapter1 ->
+                    chapter1.getId().equals(chapter)).findFirst().get().getTitle());
+            if (!pdfFile.exists()) {
+                log.error("PDF does not exist for chapter: {} of book: {}", book.getChapters().get(chapter.intValue()).getTitle(), book.getTitle());
+                return pdfBytes;
+            }
+            log.info("Reading PDF for chapter: {} of book: {}",book.getChapters().stream().filter(chapter1 ->
+                    chapter1.getId().equals(chapter)).findFirst().get().getTitle(), book.getTitle());
+            pdfBytes = Files.readAllBytes(pdfFile.toPath());
+        } catch (Exception e) {
+            log.error("Error reading PDF for chapter: {} of book: {}", book.getChapters().get(chapter.intValue()).getTitle(), book.getTitle(), e);
+        }
+        return pdfBytes;
     }
 }

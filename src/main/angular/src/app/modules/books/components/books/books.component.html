@@ -1,0 +1,69 @@
+<mat-card>
+  <!-- Title -->
+  <h2 class="align">Books Listing</h2>
+  <!-- Input for search -->
+  <mat-card-header>
+    <div>
+      <mat-form-field appearance="fill" hintLabel="Find by Title">
+        <mat-label>Search</mat-label>
+        <input #input matInput (keyup)="findBy(input.value)">
+      </mat-form-field>
+    </div>
+  </mat-card-header>
+  <!-- Button for add Book -->
+  <mat-card-header>
+    <div fxFlex fxLayout="row" fxLayoutAlign="flex-end">
+      <ul fxLayout="row" fxLayoutGap="20px">
+        <li>
+          <button (click)="openAddBookDialog()" color="primary" mat-raised-button>Add Book</button>
+        </li>
+      </ul>
+    </div>
+  </mat-card-header>
+
+  <div mat-card-image></div>
+
+  <!-- Table for books listing -->
+  <mat-card-content>
+    <table [dataSource]="dataSource" class="mat-elevation-z8" mat-table>
+      <!-- Book Id Column -->
+      <ng-container matColumnDef="id">
+        <th *matHeaderCellDef mat-header-cell> ID</th>
+        <td *matCellDef="let element" mat-cell> {{element.id}} </td>
+      </ng-container>
+      <!-- Book Name Column -->
+      <ng-container matColumnDef="title">
+        <th *matHeaderCellDef mat-header-cell> Title</th>
+        <td *matCellDef="let element" mat-cell>
+          <a [routerLink]="['chapters']">{{element.title}}</a>
+<!--          <button (click)="showChapters()" mat-button>-->
+<!--            {{element.title}}-->
+<!--          </button>-->
+        </td>
+      </ng-container>
+      <!-- Chapters counter Column -->
+      <ng-container matColumnDef="chapters">
+        <th *matHeaderCellDef mat-header-cell> Chapters</th>
+        <td *matCellDef="let element" mat-cell> {{element.chapters}} </td>
+      </ng-container>
+      <!-- Chapters unread Column -->
+      <ng-container matColumnDef="unread">
+        <th *matHeaderCellDef mat-header-cell> Unread</th>
+        <td *matCellDef="let element" mat-cell>{{element.unread}}</td>
+      </ng-container>
+      <!-- Action Column -->
+      <ng-container matColumnDef="actions">
+        <th *matHeaderCellDef mat-header-cell> Actions</th>
+        <td *matCellDef="let element;" mat-cell>
+          <button *ngIf="isAdmin" color="accent" mat-icon-button (click)="refreshBook(element.id)">
+            <mat-icon aria-label="Refresh">refresh</mat-icon>
+          </button>
+        </td>
+      </ng-container>
+
+      <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
+      <tr *matRowDef="let row; columns: displayedColumns;" mat-row></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[5, 10, 25, 50, 100]" showFirstLastButtons></mat-paginator>
+  </mat-card-content>
+</mat-card>

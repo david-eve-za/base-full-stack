@@ -2,25 +2,27 @@ package gon.cue.basefullstack;
 
 import com.github.javafaker.Faker;
 import gon.cue.basefullstack.dao.ICategoryDao;
+import gon.cue.basefullstack.dao.mng.IBookDao;
 import gon.cue.basefullstack.model.Category;
 import lombok.extern.slf4j.Slf4j;
-import org.jobrunr.jobs.mappers.JobMapper;
-import org.jobrunr.storage.InMemoryStorageProvider;
-import org.jobrunr.storage.StorageProvider;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @Slf4j
+@EnableCaching
 public class BaseFullStackApplication implements ApplicationRunner {
 
     private final ICategoryDao categoryDao;
+    private final IBookDao bookDao;
 
-    public BaseFullStackApplication(ICategoryDao categoryDao) {
+    public BaseFullStackApplication(ICategoryDao categoryDao, IBookDao bookDao) {
         this.categoryDao = categoryDao;
+        this.bookDao = bookDao;
     }
 
     public static void main(String[] args) {
@@ -29,6 +31,11 @@ public class BaseFullStackApplication implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
+//        fillCategories();
+
+    }
+
+    private void fillCategories() {
         log.info("Application started");
         if (categoryDao.count() == 0) {
             log.info("No categories found, creating default categories");
@@ -41,12 +48,5 @@ public class BaseFullStackApplication implements ApplicationRunner {
                 log.info("Category created: {}", category);
             }
         }
-    }
-
-    @Bean
-    public StorageProvider storageProvider(JobMapper jobMapper) {
-        InMemoryStorageProvider storageProvider = new InMemoryStorageProvider();
-        storageProvider.setJobMapper(jobMapper);
-        return storageProvider;
     }
 }

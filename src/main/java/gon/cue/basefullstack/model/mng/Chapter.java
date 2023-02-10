@@ -22,9 +22,7 @@ public class Chapter {
     @ManyToOne(cascade = CascadeType.ALL)
     @JsonBackReference
     private Book book;
-    @OneToMany(cascade = CascadeType.ALL)
-    @JsonManagedReference
-    @LazyCollection(LazyCollectionOption.FALSE)
+    @Transient
     private List<Page> pages = new ArrayList<>();
 
     public Long getId() {

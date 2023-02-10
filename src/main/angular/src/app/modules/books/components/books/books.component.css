@@ -1,0 +1,16 @@
+.align {
+  text-align: center;
+  margin-top: 20px;
+}
+
+ul li {
+  list-style: none;
+}
+
+table {
+  width: 100%;
+}
+
+mat-form-field {
+  width: 140%;
+}

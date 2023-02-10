@@ -1,0 +1,20 @@
+<h2 mat-dialog-title>Add new Book</h2>
+<mat-dialog-content>
+  <form [formGroup]="bookForm">
+    <div>
+      <mat-form-field class="book-container">
+        <input formControlName="url" matInput placeholder="Book URL" required>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+<mat-dialog-actions>
+  <button (click)="onSave()" [disabled]="bookForm.invalid" color="primary" mat-button>
+    <mat-icon>save</mat-icon>
+    Save
+  </button>
+  <button (click)="onCancel()" color="primary" mat-button>
+    <mat-icon>cancel</mat-icon>
+    Cancel
+  </button>
+</mat-dialog-actions>
