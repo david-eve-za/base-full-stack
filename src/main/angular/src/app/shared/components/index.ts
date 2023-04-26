@@ -1,6 +1,6 @@
 //Import components
 
-export const components:any = [
+export const components: any = [
   //Add components here
 ];
 
