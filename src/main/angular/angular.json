@@ -3,12 +3,15 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "angular": {
+    "sakai-ng": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
-          "style": "css",
+          "style": "scss",
           "skipTests": true
+        },
+        "@schematics/angular:application": {
+          "strict": true
         },
         "@schematics/angular:directive": {
           "skipTests": true
@@ -22,10 +25,10 @@
         "@schematics/angular:service": {
           "skipTests": true
         },
-        "@schematics/angular:application": {
-          "strict": true
-        },
         "@schematics/angular:class": {
+          "skipTests": true
+        },
+        "@schematics/angular:factory": {
           "skipTests": true
         }
       },
@@ -41,17 +44,13 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles.css",
-              "node_modules/bootstrap/dist/css/bootstrap.min.css"
-            ],
-            "scripts": [
-              "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/bootstrap/dist/js/bootstrap.min.js"
+              "src/styles.scss"
             ]
           },
           "configurations": {
@@ -91,10 +90,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "angular:build:production"
+              "browserTarget": "sakai-ng:build:production"
             },
             "development": {
-              "browserTarget": "angular:build:development"
+              "browserTarget": "sakai-ng:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -102,7 +101,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "angular:build"
+            "browserTarget": "sakai-ng:build"
           }
         },
         "test": {
@@ -112,17 +111,34 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.spec.json",
             "karmaConfig": "karma.conf.js",
+            "inlineStyleLanguage": "scss",
             "assets": [
               "src/favicon.ico",
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": []
+          }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "src/**/*.ts",
+              "src/**/*.html"
+            ]
           }
         }
       }
     }
+  },
+  "defaultProject": "sakai-ng",
+  "cli": {
+    "analytics": false,
+    "schematicCollections": [
+      "@angular-eslint/schematics"
+    ]
   }
 }
