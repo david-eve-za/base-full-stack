@@ -19,13 +19,13 @@ spring:
     name: BaseFullstack
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    password: example
-    url: jdbc:mysql://192.168.1.15:3306/MiscData?useSSL=false
+    password: toor
+    url: jdbc:mysql://localhost:3306/basefullstack?useSSL=false&serverTimezone=UTC
     username: root
   jpa:
     generate-ddl: true
     hibernate:
-      ddl-auto: none
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL5Dialect
@@ -42,3 +42,4 @@ springdoc:
   show-actuator: true
   swagger-ui:
     enabled: true
+    path: /swagger-ui.html
