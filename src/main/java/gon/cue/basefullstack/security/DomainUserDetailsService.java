@@ -1,8 +1,8 @@
 package gon.cue.basefullstack.security;
 
-import gon.cue.basefullstack.entities.Authority;
-import gon.cue.basefullstack.entities.User;
-import gon.cue.basefullstack.repository.UserRepository;
+import gon.cue.basefullstack.entities.login.Authority;
+import gon.cue.basefullstack.entities.login.User;
+import gon.cue.basefullstack.repository.login.UserRepository;
 import org.hibernate.validator.internal.constraintvalidators.hv.EmailValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

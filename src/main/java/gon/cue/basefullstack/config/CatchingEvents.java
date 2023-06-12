@@ -1,6 +1,6 @@
 package gon.cue.basefullstack.config;
 
-import gon.cue.basefullstack.util.delete.StartUp;
+import gon.cue.basefullstack.util.initialize.StartUp;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;

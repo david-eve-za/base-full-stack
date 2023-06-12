@@ -1,5 +1,8 @@
 package gon.cue.basefullstack.config;
 
+import gon.cue.basefullstack.entities.login.Authority;
+import gon.cue.basefullstack.entities.login.User;
+import gon.cue.basefullstack.repository.login.UserRepository;
 import gon.cue.basefullstack.util.PrefixedKeyGenerator;
 import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
@@ -45,11 +48,11 @@ public class CacheConfiguration {
     @Bean
     public JCacheManagerCustomizer cacheManagerCustomizer() {
         return cm -> {
-            createCache(cm, gon.cue.basefullstack.repository.UserRepository.USERS_BY_LOGIN_CACHE);
-            createCache(cm, gon.cue.basefullstack.repository.UserRepository.USERS_BY_EMAIL_CACHE);
-            createCache(cm, gon.cue.basefullstack.entities.User.class.getName());
-            createCache(cm, gon.cue.basefullstack.entities.Authority.class.getName());
-            createCache(cm, gon.cue.basefullstack.entities.User.class.getName() + ".authorities");
+            createCache(cm, UserRepository.USERS_BY_LOGIN_CACHE);
+            createCache(cm, UserRepository.USERS_BY_EMAIL_CACHE);
+            createCache(cm, User.class.getName());
+            createCache(cm, Authority.class.getName());
+            createCache(cm, User.class.getName() + ".authorities");
             // jhipster-needle-ehcache-add-entry
         };
     }
