@@ -73,7 +73,7 @@ e2e/*.map
 .idea/modules.xml
 .idea/*.iml
 .idea/modules
-*.iml
+BaseFullStack.iml
 *.ipr
 
 # CMake
